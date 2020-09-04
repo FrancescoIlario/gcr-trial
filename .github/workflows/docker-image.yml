@@ -1,0 +1,37 @@
+name: Docker Image CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Tag version'  
+        default: 'v0.0.1'
+        required: true
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: |
+        docker build . \
+           --file greeter/Dockerfile \
+           --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD) \
+           --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:${{ github.event.inputs.tags }} \
+           --tag ghcr.io/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD) \
+           --tag ghcr.io/francescoilario/gcr-trial/greeter:${{ github.event.inputs.tags }}
+        
+    - name: Push the Docker images
+      run: |
+        docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD)
+        docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:${{ github.event.inputs.tags }}
+        docker push ghcr.io/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD)
+        docker push ghcr.io/francescoilario/gcr-trial/greeter:${{ github.event.inputs.tags }}

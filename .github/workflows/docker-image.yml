@@ -14,6 +14,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Docker login on Github
+      run: |
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u FrancescoIlario --password-stdin
+        echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u FrancescoIlario --password-stdin
     - name: Build the Docker image
       run: |
         docker build greeter/ \
@@ -22,10 +26,6 @@ jobs:
            --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:${{ github.event.inputs.tags }} \
            --tag ghcr.io/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD) \
            --tag ghcr.io/francescoilario/gcr-trial/greeter:${{ github.event.inputs.tags }}
-    - name: Docker login on Github
-      run: |
-        echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u FrancescoIlario --password-stdin
-        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u FrancescoIlario --password-stdin
     - name: Push the Docker images
       run: |
         docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD)

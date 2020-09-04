@@ -4,12 +4,6 @@ on:
   push:
     tags:
       - "*"
-  workflow_dispatch:
-    inputs:
-      tags:
-        description: 'Tag version'  
-        default: 'v0.0.1'
-        required: true
 
 jobs:
   build:
@@ -26,12 +20,12 @@ jobs:
         docker build greeter/ \
            --file greeter/Dockerfile \
            --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD) \
-           --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:${{ github.event.inputs.tags }} \
+           --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:${{ github.event.release.tag_name }} \
            --tag ghcr.io/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD) \
-           --tag ghcr.io/francescoilario/gcr-trial/greeter:${{ github.event.inputs.tags }}
+           --tag ghcr.io/francescoilario/gcr-trial/greeter:${{ github.event.release.tag_name }}
     - name: Push the Docker images
       run: |
         docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD)
-        docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:${{ github.event.inputs.tags }}
+        docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:${{ github.event.release.tag_name }}
         docker push ghcr.io/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD)
-        docker push ghcr.io/francescoilario/gcr-trial/greeter:${{ github.event.inputs.tags }}
+        docker push ghcr.io/francescoilario/gcr-trial/greeter:${{ github.event.release.tag_name }}

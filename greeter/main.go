@@ -12,7 +12,9 @@ func main() {
 }
 
 func run() error {
+	log.Println("Starting server")
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("endpoint reached")
 		w.Write([]byte("hello!"))
 	})
 

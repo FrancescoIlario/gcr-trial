@@ -22,7 +22,10 @@ jobs:
            --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:${{ github.event.inputs.tags }} \
            --tag ghcr.io/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD) \
            --tag ghcr.io/francescoilario/gcr-trial/greeter:${{ github.event.inputs.tags }}
-        
+    - name: Docker login on Github
+      run: |
+        echo ${GITHUB_TOKEN} | docker login docker.pkg.github.com -u FrancescoIlario --password-stdin
+        echo ${GITHUB_TOKEN} | docker login ghcr.io -u FrancescoIlario --password-stdin
     - name: Push the Docker images
       run: |
         docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD)

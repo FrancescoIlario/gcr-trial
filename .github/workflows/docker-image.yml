@@ -16,20 +16,16 @@ jobs:
         echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u FrancescoIlario --password-stdin
         echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u FrancescoIlario --password-stdin
     - name: Build the Docker image
-      env:
-        TAG_NAME: $(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD)
       run: |
         docker build greeter/ \
            --file greeter/Dockerfile \
            --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD) \
-           --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:$TAG_NAME \
+           --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD) \
            --tag ghcr.io/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD) \
-           --tag ghcr.io/francescoilario/gcr-trial/greeter:$TAG_NAME
+           --tag ghcr.io/francescoilario/gcr-trial/greeter:$(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD)
     - name: Push the Docker images
-      env:
-        TAG_NAME: $(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD)
       run: |
         docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD)
-        docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:$TAG_NAME
+        docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD)
         docker push ghcr.io/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD)
-        docker push ghcr.io/francescoilario/gcr-trial/greeter:$TAG_NAME
+        docker push ghcr.io/francescoilario/gcr-trial/greeter:$(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD)

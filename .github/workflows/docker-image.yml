@@ -17,15 +17,21 @@ jobs:
         echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u FrancescoIlario --password-stdin
     - name: Build the Docker image
       run: |
+        TAG_NAME=$(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD)
+        REVISION=$(git rev-parse --short HEAD)
+
         docker build greeter/ \
            --file greeter/Dockerfile \
-           --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD) \
-           --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD) \
-           --tag ghcr.io/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD) \
-           --tag ghcr.io/francescoilario/gcr-trial/greeter:$(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD)
+           --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:$REVISION \
+           --tag docker.pkg.github.com/francescoilario/gcr-trial/greeter:$TAG_NAME \
+           --tag ghcr.io/francescoilario/gcr-trial/greeter:$REVISION \
+           --tag ghcr.io/francescoilario/gcr-trial/greeter:$TAG_NAME
     - name: Push the Docker images
       run: |
-        docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD)
-        docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:$(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD)
-        docker push ghcr.io/francescoilario/gcr-trial/greeter:$(git rev-parse --short HEAD)
-        docker push ghcr.io/francescoilario/gcr-trial/greeter:$(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD)
+        TAG_NAME=$(git describe --exact-match --tags 2> /dev/null || git rev-parse --short HEAD)
+        REVISION=$(git rev-parse --short HEAD)
+
+        docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:$REVISION
+        docker push docker.pkg.github.com/francescoilario/gcr-trial/greeter:$TAG_NAME
+        docker push ghcr.io/francescoilario/gcr-trial/greeter:$REVISION
+        docker push ghcr.io/francescoilario/gcr-trial/greeter:$TAG_NAME
